@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Focus Timer</title>
+  <style>
+    body { font: 16px system-ui, sans-serif; max-width: 28rem; margin: 12vh auto; padding: 0 1rem; text-align: center; }
+    output { display: block; font-size: 4rem; margin: 1rem; }
+    input, button { font: inherit; padding: .5rem; }
+  </style>
+</head>
+<body>
+  <h1>Focus Timer</h1>
+  <label>Minutes <input id="minutes" type="number" min="1" max="180" value="25"></label>
+  <output id="display" aria-live="polite">25:00</output>
+  <button id="start">Start</button>
+  <button id="reset">Reset</button>
+  <script>
+    const input = document.querySelector('#minutes');
+    const display = document.querySelector('#display');
+    let remaining = 25 * 60;
+    let interval;
+    function render() {
+      display.textContent = `${String(Math.floor(remaining / 60)).padStart(2, '0')}:${String(remaining % 60).padStart(2, '0')}`;
+    }
+    document.querySelector('#start').addEventListener('click', () => {
+      if (interval) return;
+      interval = setInterval(() => {
+        remaining -= 1;
+        render();
+        if (remaining <= 0) {
+          clearInterval(interval);
+          interval = undefined;
+          alert('Focus session complete.');
+        }
+      }, 1000);
+    });
+    document.querySelector('#reset').addEventListener('click', () => {
+      clearInterval(interval);
+      interval = undefined;
+      remaining = Math.max(1, Number(input.value) || 25) * 60;
+      render();
+    });
+    input.addEventListener('change', () => document.querySelector('#reset').click());
+    render();
+  </script>
+</body>
+</html>
